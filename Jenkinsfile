@@ -5,7 +5,7 @@ pipeline{
     }
     
     environment{
-        AWS_EC2_KEY=credentials('ec2-key')
+        github_key=credentials('ansible-creds')
     }
     
     stages{
@@ -31,6 +31,6 @@ pipeline{
         stage('Install tomcat'){
             steps{
                 sh "ansible-inventory --graph -i inventory/aws_ec2.yaml"
-                sh "ansible-playbook -i inventory/aws_ec2.yaml playbooks/installTomcat.yml -u ec2-user --private-key=$AWS_EC2_KEY --ssh-common-args='-o StrictHostKeyChecking=no' --limit tomcat_instance"
+                sh "ansible-playbook -i inventory/aws_ec2.yaml playbooks/installTomcat.yml -u ansible --private-key=$github_key --ssh-common-args='-o StrictHostKeyChecking=no' --limit tomcat_instance"
             }
         }

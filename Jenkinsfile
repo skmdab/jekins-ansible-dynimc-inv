@@ -24,7 +24,7 @@ pipeline{
 
         stage('waiting for create server'){
             steps{
-                sh "sleep time: 40, unit: 'SECONDS'"
+                sh "sleep 40"
             }
         }
         

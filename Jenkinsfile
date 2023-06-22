@@ -5,29 +5,32 @@ pipeline{
     }
     
     environment{
-        AWS_PRIVATE_KEY=credentials('ec2-key')
+        AWS_EC2_KEY=credentials('ec2-key')
     }
     
     stages{
         stage('Checkout the code'){
             steps{
-                git 'https://github.com/skmdab/jekins-ansible-dynimc-inv.git'
+                git branch: 'testing', url: 'https://github.com/skmdab/jekins-ansible-dynimc-inv.git'
             }
-        
         }
-
-        stage('Create ec2 instance'){
+        
+        stage('Create tomcat server'){
             steps{
                 sh "terraform -chdir=terraformscripts init"
                 sh "terraform -chdir=terraformscripts apply --auto-approve"
             }
         }
-        
-        stage('Run the playbook'){
+
+        stage('waiting for create server'){
             steps{
-                sh "ansible-inventory -i inventory/aws-ec2.yaml --graph"
-                sh "ansible-playbook -i inventory/aws-ec2.yaml playbooks/installTomcat.yml -u ec2-user --private-key=$AWS_PRIVATE_KEY --limit tomcat-server --ssh-common-args='-o StrictHostKeyChecking=no'"
+                sh "sleep time: 40, unit: 'SECONDS'"
             }
         }
-    }
-}
+        
+        stage('Install tomcat'){
+            steps{
+                sh "ansible-inventory --graph -i inventory/aws_ec2.yaml"
+                sh "ansible-playbook -i inventory/aws_ec2.yaml playbooks/installTomcat.yml -u ec2-user --private-key=$AWS_EC2_KEY --ssh-common-args='-o StrictHostKeyChecking=no' --limit tomcat-instance"
+            }
+        }

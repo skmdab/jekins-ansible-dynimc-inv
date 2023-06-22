@@ -8,6 +8,6 @@ instance_type = "t2.micro"
 key_name = "filinta"
 security_groups = ["default"]
 tags = {
-Name = "tomcat-instance"
+Name = "tomcat_instance"
 }
 }
